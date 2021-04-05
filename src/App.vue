@@ -1,30 +1,54 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
-  <router-view/>
+  <div id="app">
+    <my-header>{{ state.headerTitle }}</my-header>
+    <search-input
+    :placeholder="state.placeholder"
+    :maxlength='state.maxlength'
+    ></search-input>
+    <router-view/>
+
+    <tab/>
+  </div> 
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+import MyHeader from '@/components/Header'
+import Tab from '@/components/Tab'
+import SearchInput from '@/components/Searchinput'
 
-#nav {
-  padding: 30px;
+import { useStore } from 'vuex'
+import { computed, watch } from 'vue'
+import { useRouter } from 'vue-router'
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+export default {
+  name:'app',
+  components:{
+    MyHeader,
+    Tab,
+    SearchInput
+  },
+  setup () {
+    const store = useStore(),
+          router = useRouter()
+    
+    router.push('/')
 
-    &.router-link-exact-active {
-      color: #42b983;
+    watch (() => {
+      return router.currentRoute.value.name
+    }, (value) => {
+      store.commit('setHeaderTitle', value)
+      store.commit('setPlaceHolder', value)
+      store.commit('setMaxLength', value)
+    })
+
+
+
+    return {
+      state:computed(() => store.state)
+  
     }
+    
+    
   }
 }
-</style>
+</script>
